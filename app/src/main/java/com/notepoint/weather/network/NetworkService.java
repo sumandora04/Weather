@@ -20,6 +20,7 @@ public class NetworkService {
 
     public static final String APIKEY ="cd33e8e3b9c64bfde031daee6c5cd59b";
     public static final String TEMP_UNIT ="metric";
+    public static final String NUMBER_OF_DAYS_FOR_FORCAST ="6";
 
     private static final String BASE_URL ="http://api.openweathermap.org/data/2.5/";
 

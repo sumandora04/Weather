@@ -1,3 +1,9 @@
 <resources>
 	<string name = "app_name">Weather</string>
+	<string name = "sunrise">Sunrise</string>
+	<string name = "sunset">Sunset</string>
+	<string name = "wind">Wind</string>
+	<string name = "pressure">Pressure</string>
+	<string name = "humidity">Humidity</string>
+	<string name = "search_for_a_city_for_weather_report">Search for a city for weather report</string>
 </resources>

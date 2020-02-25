@@ -18,7 +18,7 @@
 
         <variable
             name="viewModel"
-            type="com.notepoint.weather.viewModels.WeatherViewmodel" />
+            type="com.notepoint.weather.viewModels.ForecastViewModel" />
     </data>
 
     <LinearLayout

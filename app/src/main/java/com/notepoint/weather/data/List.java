@@ -4,8 +4,13 @@ package com.notepoint.weather.data;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+
+import java.util.Objects;
 
 public class List implements Parcelable
 {
@@ -169,4 +174,36 @@ public class List implements Parcelable
                 ", dtTxt='" + dtTxt + '\'' +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof List)) return false;
+        List list = (List) o;
+        return dt.equals(list.dt) &&
+                temperatureDetails.equals(list.temperatureDetails) &&
+                weather.equals(list.weather) &&
+                clouds.equals(list.clouds) &&
+                wind.equals(list.wind) &&
+                sys.equals(list.sys) &&
+                dtTxt.equals(list.dtTxt);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(dt, temperatureDetails, weather, clouds, wind, sys, dtTxt);
+    }
+
+
+    public static final DiffUtil.ItemCallback<List> DIFF_CALLBACK = new DiffUtil.ItemCallback<List>() {
+        @Override
+        public boolean areItemsTheSame(@NonNull List oldItem, @NonNull List newItem) {
+            return oldItem.dt.equals(newItem.dt);
+        }
+
+        @Override
+        public boolean areContentsTheSame(@NonNull List oldItem, @NonNull List newItem) {
+            return oldItem.equals(newItem);
+        }
+    };
 }

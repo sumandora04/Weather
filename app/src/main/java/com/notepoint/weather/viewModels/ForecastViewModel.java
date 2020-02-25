@@ -15,14 +15,11 @@ package com.notepoint.weather.viewModels;
 
 import android.util.Log;
 
-import androidx.arch.core.util.Function;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
 import com.notepoint.weather.data.AllWeatherDetails;
-import com.notepoint.weather.data.Weather;
 import com.notepoint.weather.network.ApiService;
 import com.notepoint.weather.network.NetworkService;
 
@@ -32,59 +29,44 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class WeatherViewmodel extends ViewModel {
+public class ForecastViewModel extends ViewModel {
+    private static final String TAG = "ForecastViewModel";
+    private MutableLiveData<List<com.notepoint.weather.data.List>> _weatherForecast = new MutableLiveData<>();
 
-    private static final String TAG = "WeatherViewmodel";
-    private MutableLiveData<AllWeatherDetails> _allWeatherDetails = new MutableLiveData<>();
-    public MutableLiveData<Boolean> isLoading = new MutableLiveData<>();
-    public MutableLiveData<Boolean> isError = new MutableLiveData<>();
-    public MutableLiveData<Boolean> showSearchHint = new MutableLiveData<>();
-
-
-    public LiveData<AllWeatherDetails> getAllWeatherLiveData() {
-        return _allWeatherDetails;
-    }
-    public LiveData<Boolean> isDataLoading() {
-        return isLoading;
-    }
-    public LiveData<Boolean> hasNetworkError() {
-        return isError;
-    }
-    public LiveData<Boolean> shouldShowSearchHint() {
-        return showSearchHint;
+    public LiveData<List<com.notepoint.weather.data.List>> getForecastLiveData() {
+        return _weatherForecast;
     }
 
 
-    public WeatherViewmodel() {
-
+    public ForecastViewModel() {
+        getForecast("Bangalore");
     }
 
-    public void getCurrentWeatherData(String place) {
-        showSearchHint.setValue(false);
-        isLoading.setValue(true);
+    private void getForecast(String place){
         ApiService apiService = NetworkService.create();
-        Call<AllWeatherDetails> call = apiService.getCurrentWeather(place, NetworkService.TEMP_UNIT, NetworkService.APIKEY);
+        Call<AllWeatherDetails> call = apiService.getWeatherForecast(
+                place,
+                NetworkService.NUMBER_OF_DAYS_FOR_FORCAST,
+                NetworkService.TEMP_UNIT,
+                NetworkService.APIKEY
+        );
+
         call.enqueue(new Callback<AllWeatherDetails>() {
             @Override
             public void onResponse(Call<AllWeatherDetails> call, Response<AllWeatherDetails> response) {
                 if (response.isSuccessful()) {
                     if (response.body() != null) {
                         Log.d(TAG, "onResponse: " + response.body());
-                        _allWeatherDetails.setValue(response.body());
-                        isLoading.setValue(false);
+                        _weatherForecast.setValue(response.body().getList());
                     }
                 } else {
                     Log.d(TAG, "onResponse: " + response.message());
-                    isError.setValue(true);
-                    isLoading.setValue(false);
                 }
             }
 
             @Override
             public void onFailure(Call<AllWeatherDetails> call, Throwable t) {
                 Log.d(TAG, "onFailure: " + t.getMessage());
-                isError.setValue(true);
-                isLoading.setValue(false);
             }
         });
     }

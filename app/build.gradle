@@ -47,6 +47,7 @@ ext {
     glide = '4.9.0'
     lifecycle = '2.2.0'
     material_design = '1.1.0'
+    lottieVersion = '3.4.0'
 }
 
 dependencies {
@@ -71,5 +72,6 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle"
 
     implementation "com.google.android.material:material:$material_design"
+    implementation "com.airbnb.android:lottie:$lottieVersion"
 
 }

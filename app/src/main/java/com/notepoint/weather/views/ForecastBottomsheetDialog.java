@@ -15,36 +15,57 @@ package com.notepoint.weather.views;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
-import com.notepoint.weather.ForecastAdapter;
+import com.notepoint.weather.adapter.ForecastAdapter;
 import com.notepoint.weather.R;
-
-import static androidx.recyclerview.widget.LinearLayoutManager.HORIZONTAL;
+import com.notepoint.weather.data.List;
+import com.notepoint.weather.databinding.ForecastBottomSheetBinding;
+import com.notepoint.weather.viewModels.ForecastViewModel;
 
 public class ForecastBottomsheetDialog extends BottomSheetDialogFragment {
+
+    private static final String TAG = "ForecastBottomsheetDial";
+
+    private ForecastBottomSheetBinding binding;
+    private ForecastViewModel forecastViewModel;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.forecast_bottom_sheet,container,false);
+        binding = ForecastBottomSheetBinding.inflate(getLayoutInflater());
+        forecastViewModel = ViewModelProviders.of(this).get(ForecastViewModel.class);
+        binding.setViewModel(forecastViewModel);
+        binding.setLifecycleOwner(this);
 
-        RecyclerView forecastRecycler = view.findViewById(R.id.forecast_recycler);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(),RecyclerView.HORIZONTAL,false);
-        forecastRecycler.setLayoutManager(layoutManager);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, false);
+        binding.forecastRecycler.setLayoutManager(layoutManager);
 
         ForecastAdapter adapter = new ForecastAdapter();
-        forecastRecycler.setAdapter(adapter);
+        binding.forecastRecycler.setAdapter(adapter);
 
-        return view;
+
+        forecastViewModel.getForecastLiveData().observe(getViewLifecycleOwner(), new Observer<java.util.List<List>>() {
+            @Override
+            public void onChanged(java.util.List<List> lists) {
+                Log.d(TAG, "onChanged: "+lists);
+                adapter.submitList(lists);
+            }
+        });
+
+
+        return binding.getRoot();
     }
 
     @Override
