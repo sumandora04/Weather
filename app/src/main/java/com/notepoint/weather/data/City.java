@@ -184,4 +184,18 @@ public class City implements Parcelable
         return  0;
     }
 
+
+    @Override
+    public String toString() {
+        return "City{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", coord=" + coord +
+                ", country='" + country + '\'' +
+                ", population=" + population +
+                ", timezone=" + timezone +
+                ", sunrise=" + sunrise +
+                ", sunset=" + sunset +
+                '}';
+    }
 }

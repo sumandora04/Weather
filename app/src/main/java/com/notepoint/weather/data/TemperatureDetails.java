@@ -154,4 +154,16 @@ public class TemperatureDetails implements Parcelable
         return  0;
     }
 
+
+    @Override
+    public String toString() {
+        return "TemperatureDetails{" +
+                "temp=" + temp +
+                ", feelsLike=" + feelsLike +
+                ", tempMin=" + tempMin +
+                ", tempMax=" + tempMax +
+                ", pressure=" + pressure +
+                ", humidity=" + humidity +
+                '}';
+    }
 }

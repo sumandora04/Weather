@@ -94,4 +94,12 @@ public class Wind implements Parcelable
         return  0;
     }
 
+
+    @Override
+    public String toString() {
+        return "Wind{" +
+                "speed=" + speed +
+                ", deg=" + deg +
+                '}';
+    }
 }

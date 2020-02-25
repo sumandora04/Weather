@@ -94,4 +94,12 @@ public class Coordinate implements Parcelable
         return  0;
     }
 
+
+    @Override
+    public String toString() {
+        return "Coordinate{" +
+                "lon=" + lon +
+                ", lat=" + lat +
+                '}';
+    }
 }

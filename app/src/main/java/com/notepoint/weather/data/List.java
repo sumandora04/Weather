@@ -156,4 +156,17 @@ public class List implements Parcelable
         return  0;
     }
 
+
+    @Override
+    public String toString() {
+        return "List{" +
+                "dt=" + dt +
+                ", temperatureDetails=" + temperatureDetails +
+                ", weather=" + weather +
+                ", clouds=" + clouds +
+                ", wind=" + wind +
+                ", sys=" + sys +
+                ", dtTxt='" + dtTxt + '\'' +
+                '}';
+    }
 }

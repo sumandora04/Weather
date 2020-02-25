@@ -24,6 +24,7 @@ public interface ApiService {
     @GET("weather")
     Call<AllWeatherDetails>getCurrentWeather(
             @Query("q") String place,
+            @Query("units") String tempUnit,
             @Query("appid") String apiKey
     );
 
@@ -31,6 +32,7 @@ public interface ApiService {
     Call<AllWeatherDetails>getCurrentWeatherFromLatLang(
             @Query("lat") String latitude,
             @Query("lon") String longitude,
+            @Query("units") String tempUnit,
             @Query("appid") String apiKey
     );
 
@@ -40,6 +42,7 @@ public interface ApiService {
     Call<AllWeatherDetails>getWeatherForecast(
             @Query("q") String place,
             @Query("cnt") String numberOfDays,
+            @Query("units") String tempUnit,
             @Query("appid") String apiKey
     );
 

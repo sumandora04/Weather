@@ -79,4 +79,11 @@ public class Clouds implements Parcelable
         return  0;
     }
 
+
+    @Override
+    public String toString() {
+        return "Clouds{" +
+                "all=" + all +
+                '}';
+    }
 }

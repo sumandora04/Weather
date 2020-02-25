@@ -314,4 +314,26 @@ public class AllWeatherDetails implements Parcelable
         return  0;
     }
 
+    @Override
+    public String toString() {
+        return "AllWeatherDetails{" +
+                "coordinate=" + coordinate +
+                ", weather=" + weather +
+                ", base='" + base + '\'' +
+                ", temperatureDetails=" + temperatureDetails +
+                ", visibility=" + visibility +
+                ", wind=" + wind +
+                ", clouds=" + clouds +
+                ", dt=" + dt +
+                ", sys=" + sys +
+                ", timezone=" + timezone +
+                ", id=" + id +
+                ", cityName='" + cityName + '\'' +
+                ", cod=" + cod +
+                ", message=" + message +
+                ", cnt=" + cnt +
+                ", list=" + list +
+                ", city=" + city +
+                '}';
+    }
 }
