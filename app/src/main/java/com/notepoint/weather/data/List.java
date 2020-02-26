@@ -91,6 +91,11 @@ public class List implements Parcelable
         this.dtTxt = dtTxt;
     }
 
+    public List(java.util.List<Weather> weather, String dtTxt) {
+        this.weather = weather;
+        this.dtTxt = dtTxt;
+    }
+
     public Integer getDt() {
         return dt;
     }

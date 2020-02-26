@@ -28,20 +28,9 @@ public interface ApiService {
             @Query("appid") String apiKey
     );
 
-    @GET("weather")
-    Call<AllWeatherDetails>getCurrentWeatherFromLatLang(
-            @Query("lat") String latitude,
-            @Query("lon") String longitude,
-            @Query("units") String tempUnit,
-            @Query("appid") String apiKey
-    );
-
-
-    //http://api.openweathermap.org/data/2.5/forecast?q=bangalore&cnt=6&appid=cd33e8e3b9c64bfde031daee6c5cd59b
     @GET("forecast")
     Call<AllWeatherDetails>getWeatherForecast(
             @Query("q") String place,
-            @Query("cnt") String numberOfDays,
             @Query("units") String tempUnit,
             @Query("appid") String apiKey
     );

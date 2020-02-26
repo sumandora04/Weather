@@ -38,7 +38,9 @@ public class WeatherViewmodel extends ViewModel {
     private MutableLiveData<AllWeatherDetails> _allWeatherDetails = new MutableLiveData<>();
     public MutableLiveData<Boolean> isLoading = new MutableLiveData<>();
     public MutableLiveData<Boolean> isError = new MutableLiveData<>();
+    public MutableLiveData<Boolean> isUnknownError = new MutableLiveData<>();
     public MutableLiveData<Boolean> showSearchHint = new MutableLiveData<>();
+    public MutableLiveData<Boolean> showParentWeather = new MutableLiveData<>();
 
 
     public LiveData<AllWeatherDetails> getAllWeatherLiveData() {
@@ -47,6 +49,12 @@ public class WeatherViewmodel extends ViewModel {
     public LiveData<Boolean> isDataLoading() {
         return isLoading;
     }
+    public LiveData<Boolean> shouldShowParentWeather() {
+        return showParentWeather;
+    }
+    public LiveData<Boolean> hasUnknownError() {
+        return isUnknownError;
+    }
     public LiveData<Boolean> hasNetworkError() {
         return isError;
     }
@@ -54,10 +62,6 @@ public class WeatherViewmodel extends ViewModel {
         return showSearchHint;
     }
 
-
-    public WeatherViewmodel() {
-
-    }
 
     public void getCurrentWeatherData(String place) {
         showSearchHint.setValue(false);
@@ -72,11 +76,16 @@ public class WeatherViewmodel extends ViewModel {
                         Log.d(TAG, "onResponse: " + response.body());
                         _allWeatherDetails.setValue(response.body());
                         isLoading.setValue(false);
+                        showParentWeather.setValue(true);
+                        showSearchHint.setValue(false);
+                        isUnknownError.setValue(false);
+
                     }
                 } else {
                     Log.d(TAG, "onResponse: " + response.message());
-                    isError.setValue(true);
+                    isUnknownError.setValue(true);
                     isLoading.setValue(false);
+                    showParentWeather.setValue(false);
                 }
             }
 
@@ -85,6 +94,9 @@ public class WeatherViewmodel extends ViewModel {
                 Log.d(TAG, "onFailure: " + t.getMessage());
                 isError.setValue(true);
                 isLoading.setValue(false);
+                showSearchHint.setValue(false);
+                isUnknownError.setValue(false);
+                showParentWeather.setValue(false);
             }
         });
     }

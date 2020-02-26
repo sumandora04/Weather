@@ -13,9 +13,12 @@
 
 package com.notepoint.weather.utils;
 
+import android.app.Activity;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -26,22 +29,30 @@ public class CommonUtils {
     public static final SimpleDateFormat DATE_TIME = new SimpleDateFormat("d MMMM, yyyy h:mm,a", Locale.ENGLISH);
     public static final SimpleDateFormat TIME = new SimpleDateFormat("hh:mm a", Locale.ENGLISH);
     public static final SimpleDateFormat DAY_DATE = new SimpleDateFormat("E\nMMM d", Locale.ENGLISH);
+    public static final SimpleDateFormat DATE = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
 
+    /*
+    * Date format conversion.
+    * */
     public static String epochToDateTimeConverter(long epoch, SimpleDateFormat formatter) {
         Date date = new Date(epoch*1000);
         return formatter.format(date);
     }
 
-
-
-
+    /*
+    * Check network status:
+    * */
     public static boolean isNetworkAvailable(Context context){
-        ConnectivityManager cm =
-                (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
-
+        ConnectivityManager cm = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-
-        return activeNetwork != null &&
-                activeNetwork.isConnectedOrConnecting();
+        return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+    }
+	
+	/*
+	* Hide soft keyboard:
+	* */
+	public static void hideSoftKeyboardBtn(Activity activity, View view) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(view.getApplicationWindowToken(), 0);
     }
 }

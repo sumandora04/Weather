@@ -18,6 +18,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.SearchView;
 import android.widget.Toast;
 
@@ -32,13 +34,15 @@ import com.notepoint.weather.R;
 import com.notepoint.weather.data.AllWeatherDetails;
 import com.notepoint.weather.data.Weather;
 import com.notepoint.weather.databinding.ActivityMainBinding;
+import com.notepoint.weather.network.NetworkService;
 import com.notepoint.weather.utils.CommonUtils;
 import com.notepoint.weather.viewModels.WeatherViewmodel;
 
 public class WeatherActivity extends AppCompatActivity {
     private static final String TAG = "WeatherActivity";
-    WeatherViewmodel weatherViewmodel;
-    ActivityMainBinding binding;
+    private WeatherViewmodel weatherViewmodel;
+    private ActivityMainBinding binding;
+    private Animation animation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,25 +50,30 @@ public class WeatherActivity extends AppCompatActivity {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         weatherViewmodel = ViewModelProviders.of(this).get(WeatherViewmodel.class);
 
+        animation = AnimationUtils.loadAnimation(this, R.anim.pulse);
         binding.forecastLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ForecastBottomsheetDialog bottomSheet = new ForecastBottomsheetDialog();
-                bottomSheet.show(getSupportFragmentManager(), "forecastBottomSheet");
+                if (CommonUtils.isNetworkAvailable(WeatherActivity.this)) {
+                    ForecastBottomsheetDialog bottomSheet = new ForecastBottomsheetDialog();
+                    bottomSheet.show(getSupportFragmentManager(), "forecastBottomSheet");
+                }else {
+                    weatherViewmodel.isError.setValue(true);
+                }
             }
         });
 
         weatherViewmodel.getAllWeatherLiveData().observe(this, new Observer<AllWeatherDetails>() {
             @Override
             public void onChanged(AllWeatherDetails allWeatherDetails) {
-                Log.d(TAG, "onChanged: "+allWeatherDetails);
+
                 Weather currentWeatherDetail = allWeatherDetails.getWeather().get(0);
                 binding.status.setText(currentWeatherDetail.getDescription());
                 binding.address.setText(String.format("%s, %s", allWeatherDetails.getCityName(), allWeatherDetails.getSys().getCountry()));
                 binding.updatedAt.setText(CommonUtils.epochToDateTimeConverter(allWeatherDetails.getDt(), CommonUtils.DATE_TIME));
                 binding.temp.setText(String.format("%s°C", allWeatherDetails.getTemperatureDetails().getTemp()));
-                binding.tempMin.setText(String.format("%s°C",allWeatherDetails.getTemperatureDetails().getTempMin()));
-                binding.tempMax.setText(String.format("%s°C",allWeatherDetails.getTemperatureDetails().getTempMax()));
+                binding.tempMin.setText(String.format("Min Temp: %s°C",allWeatherDetails.getTemperatureDetails().getTempMin()));
+                binding.tempMax.setText(String.format("Max Temp: %s°C",allWeatherDetails.getTemperatureDetails().getTempMax()));
                 binding.sunrise.setText(CommonUtils.epochToDateTimeConverter(allWeatherDetails.getSys().getSunrise(), CommonUtils.TIME));
                 binding.sunset.setText(CommonUtils.epochToDateTimeConverter(allWeatherDetails.getSys().getSunset(), CommonUtils.TIME));
                 binding.wind.setText(String.valueOf(allWeatherDetails.getWind().getSpeed()));
@@ -85,6 +94,7 @@ public class WeatherActivity extends AppCompatActivity {
                 if (aBoolean!=null){
                     if (aBoolean) {
                         binding.networkErrorLayout.setVisibility(View.VISIBLE);
+                        // binding.weatherParentLayout.setVisibility(View.GONE);
                     }else {
                         binding.networkErrorLayout.setVisibility(View.GONE);
                     }
@@ -97,10 +107,8 @@ public class WeatherActivity extends AppCompatActivity {
             public void onChanged(Boolean aBoolean) {
                 if (aBoolean) {
                     binding.progressView.setVisibility(View.VISIBLE);
-                    binding.weatherParentLayout.setVisibility(View.GONE);
                 }else {
                     binding.progressView.setVisibility(View.GONE);
-                    binding.weatherParentLayout.setVisibility(View.VISIBLE);
                 }
 
             }
@@ -119,6 +127,34 @@ public class WeatherActivity extends AppCompatActivity {
             }
         });
 
+        weatherViewmodel.shouldShowParentWeather().observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                if (aBoolean!=null){
+                    if (aBoolean) {
+                        binding.weatherParentLayout.setVisibility(View.VISIBLE);
+                    }else {
+                        binding.weatherParentLayout.setVisibility(View.GONE);
+                    }
+                }
+            }
+        });
+
+        weatherViewmodel.hasUnknownError().observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                if (aBoolean!=null){
+                    if (aBoolean) {
+                       // binding.weatherParentLayout.setVisibility(View.GONE);
+                        binding.searchForCityHintText.setVisibility(View.VISIBLE);
+                        binding.searchForCityHintText.setText(getResources().getString(R.string.unknown_error));
+                    }else {
+                        binding.searchForCityHintText.setVisibility(View.GONE);
+                    }
+                }
+            }
+        });
+
 
         binding.tryAgainBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -134,6 +170,19 @@ public class WeatherActivity extends AppCompatActivity {
 
 
     @Override
+    protected void onStart() {
+        super.onStart();
+
+        binding.forecastImage.startAnimation(animation);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        animation.cancel();
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.search_menu,menu);
         MenuItem mSearch = menu.findItem(R.id.weather_search);
@@ -144,14 +193,17 @@ public class WeatherActivity extends AppCompatActivity {
             public boolean onQueryTextSubmit(String query) {
                 if (CommonUtils.isNetworkAvailable(WeatherActivity.this)) {
                     weatherViewmodel.getCurrentWeatherData(query);
+                    NetworkService.SEARCHED_CITY = query;
+                    CommonUtils.hideSoftKeyboardBtn(WeatherActivity.this,mSearchView);
                 }else {
                     weatherViewmodel.isError.setValue(true);
+                    weatherViewmodel.showParentWeather.setValue(false);
+                    weatherViewmodel.showSearchHint.setValue(false);
                 }
                 return true;
             }
             @Override
             public boolean onQueryTextChange(String newText) {
-               // adapter.getFilter().filter(newText);
                 return true;
             }
         });
@@ -161,10 +213,6 @@ public class WeatherActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-
-        if (item.getItemId()==R.id.weather_search){
-            Toast.makeText(this, "Search", Toast.LENGTH_SHORT).show();
-        }
 
         return super.onOptionsItemSelected(item);
     }

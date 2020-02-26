@@ -68,7 +68,7 @@ public class ForecastAdapter extends ListAdapter<List,ForecastAdapter.ForecastVi
 
         void bindData(List list){
             try {
-                Date date =new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.ENGLISH).parse(list.getDtTxt());
+                Date date =new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).parse(list.getDtTxt());
                 dayText.setText(CommonUtils.DAY_DATE.format(date));
             } catch (ParseException e) {
                 e.printStackTrace();

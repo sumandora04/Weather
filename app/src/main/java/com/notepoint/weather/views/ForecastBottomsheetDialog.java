@@ -59,11 +59,26 @@ public class ForecastBottomsheetDialog extends BottomSheetDialogFragment {
         forecastViewModel.getForecastLiveData().observe(getViewLifecycleOwner(), new Observer<java.util.List<List>>() {
             @Override
             public void onChanged(java.util.List<List> lists) {
-                Log.d(TAG, "onChanged: "+lists);
                 adapter.submitList(lists);
             }
         });
 
+
+
+        forecastViewModel.isDataLoading().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                if (aBoolean!=null){
+                    if (aBoolean) {
+                        binding.progressView.setVisibility(View.VISIBLE);
+                        binding.forecastRecycler.setVisibility(View.GONE);
+                    }else {
+                        binding.progressView.setVisibility(View.GONE);
+                        binding.forecastRecycler.setVisibility(View.VISIBLE);
+                    }
+                }
+            }
+        });
 
         return binding.getRoot();
     }
